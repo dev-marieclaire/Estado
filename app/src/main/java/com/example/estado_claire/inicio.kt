@@ -30,7 +30,7 @@ fun InicioScreen(modifier: Modifier, nombre: String)
 
     Column()
     {
-        TextField(nom_ecris)
+        TextField(nom_ecris, onValueChange = nom_ecris, modifier = Modifier)
         Button({nom_list.add(nom_ecris)})
         {
             Text("Añadir", fontSize = 32.sp)
