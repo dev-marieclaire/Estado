@@ -28,27 +28,29 @@ import com.example.estado_claire.components.MiCard
 
 @Composable
 fun InicioScreen(modifier: Modifier = Modifier) {
-    var repeats by rememberSaveable { mutableStateOf("") }
-    val r = repeats.toIntOrNull() ?: 0
+    var operator_a by rememberSaveable { mutableStateOf("") }
+    var operator_b by rememberSaveable { mutableStateOf("") }
+    val a = operator_a.toIntOrNull()?: 0
+    val b = operator_b.toIntOrNull()?: 0
+    var res = a + b
 
     Column(modifier = modifier.fillMaxSize().padding(8.dp)) {
         TextField(
-            value = repeats,
+            value = operator_a,
             onValueChange = { nuevo ->
-                if (nuevo.all { it.isDigit() }) repeats = nuevo
+                if (nuevo.all { it.isDigit() }) operator_a = nuevo
             },
             modifier = Modifier.fillMaxWidth()
         )
 
-        LazyColumn(modifier = Modifier.fillMaxSize()) {
-            items(r) {
-                MiCard(
-                    modifier = Modifier.fillMaxWidth().height(64.dp),
-                    Color.Black,
-                    "C"
-                )
-                Spacer(modifier = Modifier.height(8.dp))
-            }
-        }
+        TextField(
+            value = operator_b,
+            onValueChange = { nuevo ->
+                if (nuevo.all { it.isDigit() }) operator_b = nuevo
+            },
+            modifier = Modifier.fillMaxWidth()
+        )
+
+        Text(res.toString())
     }
 }
