@@ -26,8 +26,7 @@ class MainActivity : ComponentActivity() {
         setContent {
             EstadoClaireTheme {
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                        var nom_list = rememberSaveable { mutableStateListOf<String>() }
-                        InicioScreen(modifier = Modifier.padding(innerPadding), "nepomuseno")
+                        InicioScreen(modifier = Modifier.padding(innerPadding))
                 }
             }
         }

@@ -13,6 +13,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -23,7 +24,13 @@ fun MiCard(modifier: Modifier = Modifier, nombre: String, color: Color, update: 
 {
     Row(modifier = modifier.fillMaxSize().background(color).padding(8.dp))
     {
-        Text(nombre, modifier = modifier.weight(1f), fontSize = 32.sp, textAlign = TextAlign.Center)
+        Text(
+            modifier = Modifier.weight(1f),
+            text = nombre,
+            color = Color.Black,
+            fontSize = 32.sp,
+            fontWeight = FontWeight(200)
+        )
 
         Button(onClick = update, modifier = Modifier.padding())
         { Text("U", fontSize = 16.sp) }
