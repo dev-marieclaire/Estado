@@ -39,11 +39,11 @@ fun InicioScreen(modifier: Modifier = Modifier) {
     var total_dentro by rememberSaveable { mutableStateOf(6) }
     var total_visitas by rememberSaveable { mutableStateOf(0) }
 
-    var porcentaje_dentro = total_dentro / 50
+    val porcentaje = (total_dentro.toFloat() / 50f * 100).toInt()
 
-    var text_total_dentro = total_dentro.toString() + " / 50"
-    var text_total_visitas = total_visitas.toString()
-    var text_porcentaje_dentro = porcentaje_dentro.toString() + "% de ocupación"
+    val text_total_dentro = total_dentro.toString() + " / 50"
+    val text_total_visitas = total_visitas.toString()
+    val text_porcentaje_dentro = porcentaje.toString() + "% de ocupación"
 
     Column(Modifier.fillMaxSize().padding(16.dp))
     {
