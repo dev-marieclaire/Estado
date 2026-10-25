@@ -1,8 +1,12 @@
 package com.example.estado_claire
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.aspectRatio
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -12,6 +16,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.text.input.InputTransformation
 import androidx.compose.foundation.text.input.then
 import androidx.compose.material3.Button
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
@@ -21,36 +26,112 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.core.text.isDigitsOnly
 import com.example.estado_claire.components.MiCard
 
 
 @Composable
 fun InicioScreen(modifier: Modifier = Modifier) {
-    var operator_a by rememberSaveable { mutableStateOf("") }
-    var operator_b by rememberSaveable { mutableStateOf("") }
-    val a = operator_a.toIntOrNull()?: 0
-    val b = operator_b.toIntOrNull()?: 0
-    var res = a + b
+    var total_dentro by rememberSaveable { mutableStateOf(6) }
+    var total_visitas by rememberSaveable { mutableStateOf(0) }
 
-    Column(modifier = modifier.fillMaxSize().padding(8.dp)) {
-        TextField(
-            value = operator_a,
-            onValueChange = { nuevo ->
-                if (nuevo.all { it.isDigit() }) operator_a = nuevo
-            },
-            modifier = Modifier.fillMaxWidth()
-        )
+    var porcentaje_dentro = total_dentro / 50
 
-        TextField(
-            value = operator_b,
-            onValueChange = { nuevo ->
-                if (nuevo.all { it.isDigit() }) operator_b = nuevo
-            },
-            modifier = Modifier.fillMaxWidth()
-        )
+    var text_total_dentro = total_dentro.toString() + " / 50"
+    var text_total_visitas = total_visitas.toString()
+    var text_porcentaje_dentro = porcentaje_dentro.toString() + "% de ocupación"
 
-        Text(res.toString())
+    Column(Modifier.fillMaxSize().padding(16.dp))
+    {
+        Text("Biblioteca Central", fontSize = 32.sp)
+        Spacer(Modifier.padding(8.dp))
+        Text("Sala de estudio · Capacidad: 50", fontSize = 16.sp)
+        Spacer(Modifier.padding(8.dp))
+
+        Box(Modifier.background(Color(0xAA33CC33)).fillMaxWidth().aspectRatio(1.25f).padding(32.dp))
+        {
+            Column()
+            {
+                Text(
+                    text_total_dentro,
+                    Modifier.fillMaxWidth(),
+                    textAlign = TextAlign.Center,
+                    fontSize = 48.sp
+                )
+                Spacer(Modifier.padding(4.dp))
+                Text(
+                    "personas en la sala",
+                    Modifier.fillMaxWidth(),
+                    textAlign = TextAlign.Center,
+                    fontSize = 16.sp
+                )
+                Spacer(Modifier.padding(4.dp))
+                Box(Modifier.background(Color.Gray).fillMaxWidth().height(8.dp))
+                {
+                    Box(
+                        Modifier.background(Color.Green)
+                            .fillMaxWidth(0.5f) // Aquí va a ir el porcentaje.
+                            .fillMaxHeight())
+                }
+                Spacer(Modifier.padding(4.dp))
+                Text(
+                    text_porcentaje_dentro,
+                    Modifier.fillMaxWidth(),
+                    textAlign = TextAlign.Center,
+                    fontSize = 24.sp
+                )
+                Text(
+                    "Aforo disponible",
+                    Modifier.fillMaxWidth(),
+                    textAlign = TextAlign.Center,
+                    fontSize = 16.sp
+                )
+            }
+        }
+
+        Spacer(Modifier.padding(8.dp))
+
+        // BOTONES
+        Row(Modifier.fillMaxWidth().height(48.dp))
+        {
+            Button(
+                modifier = Modifier.fillMaxHeight().weight(1f),
+                onClick = { if (total_dentro > 0) total_dentro -= 1 }
+            )
+            { Text("Sale") }
+
+            Spacer(Modifier.padding(8.dp))
+
+            Button(
+                modifier = Modifier.fillMaxHeight().weight(1f),
+                onClick = { if (total_dentro < 50) total_dentro += 1 }
+            )
+            { Text("Entra") }
+        }
+
+        Spacer(Modifier.padding(8.dp))
+
+        Row(Modifier.fillMaxWidth().height(64.dp).background(Color.Gray))
+        {
+            Column(Modifier.fillMaxHeight().weight(3/4f).padding(16.dp))
+            {
+                Text("Visitas del día")
+                Text("Solo suma las entradas")
+            }
+            Text(text_total_visitas, Modifier.weight(1/4f).fillMaxHeight(), fontSize = 48.sp, textAlign = TextAlign.Center)
+        }
+    }
+}
+
+@Preview
+@Composable
+fun PreviewInicioScreen()
+{
+    Surface {
+        InicioScreen(Modifier.fillMaxSize())
     }
 }
