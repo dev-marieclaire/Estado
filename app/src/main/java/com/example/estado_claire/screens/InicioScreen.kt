@@ -27,9 +27,11 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
 
-enum class Estado
+enum class Estado(val color: Color, val tope: Int)
 {
-    VACIO, POBLADO, LLENO
+    VACIO(Color.Green, 70),
+    POBLADO(Color.Yellow, 99),
+    LLENO(Color.Red, 100)
 }
 
 val couleurs = listOf(Color.Green, Color.Yellow, Color.Red)
@@ -45,7 +47,11 @@ fun InicioScreen(modifier: Modifier = Modifier) {
     var text_total_visitas = total_visitas.toString()
     var text_porcentaje_dentro = (porcentaje_dentro).toString() + "% de ocupación"
 
-    var current_state by rememberSaveable { mutableStateOf(Estado.VACIO) }
+    var current_state = when {
+        porcentaje_dentro <= Estado.VACIO.tope -> Estado.VACIO
+        porcentaje_dentro <= Estado.POBLADO.tope -> Estado.POBLADO
+        else -> Estado.LLENO
+    }
 
     Column(Modifier.fillMaxSize().padding(16.dp))
     {
@@ -74,11 +80,8 @@ fun InicioScreen(modifier: Modifier = Modifier) {
                 Spacer(Modifier.padding(4.dp))
                 Box(Modifier.background(Color.Gray).fillMaxWidth().height(8.dp))
                 {
-                    val color = if (current_state == Estado.VACIO) 0
-                                else if (current_state == Estado.POBLADO) 1
-                                else 2
                     Box(
-                        Modifier.background(couleurs[color])
+                        Modifier.background(current_state.color)
                             .fillMaxWidth(porcentaje_dentro / 100f) // Aquí va a ir el porcentaje.
                             .fillMaxHeight())
                 }
@@ -107,10 +110,6 @@ fun InicioScreen(modifier: Modifier = Modifier) {
                 modifier = Modifier.fillMaxHeight().weight(1f),
                 onClick = {
                     if (total_dentro > 0) total_dentro -= 1
-
-                    current_state = if (porcentaje_dentro < 40) Estado.VACIO
-                                    else if (porcentaje_dentro >= 40 && porcentaje_dentro < 100) Estado.POBLADO
-                                    else Estado.LLENO
                 }
             )
             { Text("Sale") }
@@ -120,12 +119,11 @@ fun InicioScreen(modifier: Modifier = Modifier) {
             Button(
                 modifier = Modifier.fillMaxHeight().weight(1f),
                 onClick = {
-                    if (total_dentro < 50) total_dentro += 1
-                    total_visitas += 1
-
-                    current_state = if (porcentaje_dentro < 40) Estado.VACIO
-                                    else if (porcentaje_dentro >= 40 && porcentaje_dentro < 100) Estado.POBLADO
-                                    else Estado.LLENO
+                    if (total_dentro < 50)
+                    {
+                        total_dentro += 1
+                        total_visitas += 1
+                    }
                 }
             )
             { Text("Entra") }
