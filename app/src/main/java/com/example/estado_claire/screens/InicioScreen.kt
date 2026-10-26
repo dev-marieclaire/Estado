@@ -1,128 +1,85 @@
 package com.example.estado_claire
 
-import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.aspectRatio
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.text.input.InputTransformation
-import androidx.compose.foundation.text.input.then
-import androidx.compose.material3.Button
+import androidx.compose.foundation.selection.selectable
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.RadioButton
+import androidx.compose.material3.Slider
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.core.text.isDigitsOnly
-import com.example.estado_claire.components.MiCard
 
+enum class Interlineado(val label: String, val multiplier: Float)
+{
+    COMPACTO("Compacto", 0.5f),
+    NORMAL("Normal", 1f),
+    AMPLIO("Amplio", 1.5f)
+}
 
 @Composable
-fun InicioScreen(modifier: Modifier = Modifier) {
-    var total_dentro by rememberSaveable { mutableStateOf(6) }
-    var total_visitas by rememberSaveable { mutableStateOf(0) }
+fun InicioScreen(modifier: Modifier = Modifier)
+{
+    var font_size by rememberSaveable { mutableStateOf(0f) }
 
-    val porcentaje = (total_dentro.toFloat() / 50f * 100).toInt()
+    var spacing_state by rememberSaveable { mutableStateOf(Interlineado.NORMAL) }
+    val current_spacing = spacing_state.multiplier
 
-    val text_total_dentro = total_dentro.toString() + " / 50"
-    val text_total_visitas = total_visitas.toString()
-    val text_porcentaje_dentro = porcentaje.toString() + "% de ocupación"
+    val spacing_options = Interlineado.entries
 
-    Column(Modifier.fillMaxSize().padding(16.dp))
+    Column(modifier.fillMaxWidth().padding(16.dp))
     {
-        Text("Biblioteca Central", fontSize = 32.sp)
-        Spacer(Modifier.padding(8.dp))
-        Text("Sala de estudio · Capacidad: 50", fontSize = 16.sp)
-        Spacer(Modifier.padding(8.dp))
-
-        Box(Modifier.background(Color(0xAA33CC33)).fillMaxWidth().aspectRatio(1.25f).padding(32.dp))
+        Text("Ajustes de letra")
+        Slider(font_size, onValueChange = { font_size = it })
+        Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween)
         {
-            Column()
-            {
-                Text(
-                    text_total_dentro,
-                    Modifier.fillMaxWidth(),
-                    textAlign = TextAlign.Center,
-                    fontSize = 48.sp
+            Text("A", fontSize = 14.sp)
+            Text("A", fontSize = 32.sp)
+        }
+
+        Text("Interlineado")
+        Row(Modifier.fillMaxWidth())
+        {
+            spacing_options.forEach { option ->
+                Row(
+                    Modifier
+                        .weight(1f)
+                        .height(56.dp)
+                        .selectable(
+                            selected = (spacing_state == option),
+                            onClick = { spacing_state = option },
+                            role = Role.RadioButton
+                        )
+                        .padding(8.dp)
                 )
-                Spacer(Modifier.padding(4.dp))
-                Text(
-                    "personas en la sala",
-                    Modifier.fillMaxWidth(),
-                    textAlign = TextAlign.Center,
-                    fontSize = 16.sp
-                )
-                Spacer(Modifier.padding(4.dp))
-                Box(Modifier.background(Color.Gray).fillMaxWidth().height(8.dp))
                 {
-                    Box(
-                        Modifier.background(Color.Green)
-                            .fillMaxWidth(0.5f) // Aquí va a ir el porcentaje.
-                            .fillMaxHeight())
+                    RadioButton(
+                        selected = (spacing_state == option),
+                        onClick = null
+                    )
+                    Text(
+                        text = option.label,
+                        style = MaterialTheme.typography.bodyLarge,
+                        modifier = Modifier.padding(start = 16.dp),
+                        fontSize = 12.sp
+                    )
                 }
-                Spacer(Modifier.padding(4.dp))
-                Text(
-                    text_porcentaje_dentro,
-                    Modifier.fillMaxWidth(),
-                    textAlign = TextAlign.Center,
-                    fontSize = 24.sp
-                )
-                Text(
-                    "Aforo disponible",
-                    Modifier.fillMaxWidth(),
-                    textAlign = TextAlign.Center,
-                    fontSize = 16.sp
-                )
             }
-        }
-
-        Spacer(Modifier.padding(8.dp))
-
-        // BOTONES
-        Row(Modifier.fillMaxWidth().height(48.dp))
-        {
-            Button(
-                modifier = Modifier.fillMaxHeight().weight(1f),
-                onClick = { if (total_dentro > 0) total_dentro -= 1 }
-            )
-            { Text("Sale") }
-
-            Spacer(Modifier.padding(8.dp))
-
-            Button(
-                modifier = Modifier.fillMaxHeight().weight(1f),
-                onClick = { if (total_dentro < 50) total_dentro += 1 }
-            )
-            { Text("Entra") }
-        }
-
-        Spacer(Modifier.padding(8.dp))
-
-        Row(Modifier.fillMaxWidth().height(64.dp).background(Color.Gray))
-        {
-            Column(Modifier.fillMaxHeight().weight(3/4f).padding(16.dp))
-            {
-                Text("Visitas del día")
-                Text("Solo suma las entradas")
-            }
-            Text(text_total_visitas, Modifier.weight(1/4f).fillMaxHeight(), fontSize = 48.sp, textAlign = TextAlign.Center)
         }
     }
 }
