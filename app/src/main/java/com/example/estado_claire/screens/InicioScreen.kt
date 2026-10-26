@@ -120,7 +120,8 @@ fun InicioScreen(modifier: Modifier = Modifier) {
             Button(
                 modifier = Modifier.fillMaxHeight().weight(1f),
                 onClick = {
-                    if (total_dentro > 0) total_dentro += 1
+                    if (total_dentro < 50) total_dentro += 1
+                    total_visitas += 1
 
                     current_state = if (porcentaje_dentro < 40) Estado.VACIO
                                     else if (porcentaje_dentro >= 40 && porcentaje_dentro < 100) Estado.POBLADO
