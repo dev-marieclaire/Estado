@@ -1,3 +1,7 @@
 <resources>
     <string name="app_name">Estado - Claire</string>
+    <string name="font_size_label">Tamaño de Fuente</string>
+    <string name="spacing_label">Interlineado</string>
+    <string name="obscur_mode_label">Modo Oscuro</string>
+    <string name="font_type_label">Tipo de Fuente</string>
 </resources>
