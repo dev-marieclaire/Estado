@@ -5,22 +5,11 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 
-enum class Interlineado(val label: String, val multiplier: Float)
-{
-    COMPACTO("Compacto", 1.0f),
-    NORMAL("Normal", 1.3f),
-    AMPLIO("Amplio", 1.6f)
-}
+// En este archivo va la lógica que es específica a una práctica.
 
-enum class TipoFuente(val type: Boolean, val label: String)
+enum class Taller(val label: String, val cupo: Int)
 {
-    SANS(false, "Sans"),
-    SERIF(true, "Serif")
+    NINGUNO("Ninguno", -1),
+    FOTOGRAFIA("Fotografía", 6),
+    MUSICA("Música", 6)
 }
-
-data class TextoEstado(
-    val tamanoFuente: Float = 14.0f,
-    val tamanoInterlineado: Interlineado = Interlineado.NORMAL,
-    val tipoFuente: TipoFuente = TipoFuente.SANS,
-    val modoOscuro: Boolean = false
-)

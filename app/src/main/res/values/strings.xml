@@ -4,4 +4,6 @@
     <string name="spacing_label">Interlineado</string>
     <string name="obscur_mode_label">Modo Oscuro</string>
     <string name="font_type_label">Tipo de Fuente</string>
+    <string name="talleres_header_label">Inscripción a talleres</string>
+    <string name="talleres_header_subtitle">Casa del Lago · cupo limitado</string>
 </resources>
