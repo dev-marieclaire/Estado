@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.text.input.TextFieldLineLimits
 import androidx.compose.foundation.text.input.TextFieldState
+import androidx.compose.foundation.text.input.clearText
 import androidx.compose.foundation.text.input.rememberTextFieldState
 import androidx.compose.material3.Button
 import androidx.compose.material3.Checkbox
@@ -27,6 +28,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -49,7 +51,12 @@ import com.example.estado_claire.components.LabeledSwitch
 import com.example.estado_claire.components.SliderSection
 import com.example.estado_claire.components.StatisticLine
 import com.example.estado_claire.logic.Tip
+import kotlin.collections.mutableListOf
 import kotlin.plus
+
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Close
+import androidx.compose.material3.OutlinedButton
 
 enum class Priority(val nom: String, val level: Int)
 {
@@ -65,18 +72,18 @@ enum class State(val nom: String)
     Ready("Hecha")
 }
 
-data class Task(
+class Task(
     var name: String,
     var priotiry: Priority,
-    var state: State
-)
+    initialState: State = State.Pending
+) {
+    var state by mutableStateOf(initialState)
+}
 
 @Composable
 fun TaskTag(
     modifier: Modifier = Modifier,
     task: Task,
-    done: Boolean,
-    onDoneChange: (Boolean) -> Unit,
     onDelete: () -> Unit
 )
 {
@@ -91,12 +98,9 @@ fun TaskTag(
         )
         {
             Checkbox(
-                done,
+                task.state == State.Ready,
                 {
-                    onDoneChange(it)
-                    isHighlighted = it
-                    if (it) task.state = State.Ready
-                    else task.state = State.Pending
+                    task.state = if (it) State.Ready else State.Pending
                 }
             )
 
@@ -105,20 +109,27 @@ fun TaskTag(
                 Text(
                     task.name,
                     fontSize = 18.sp,
-                    textDecoration = if (isHighlighted) TextDecoration.LineThrough else TextDecoration.None,
+                    textDecoration = if (task.state == State.Ready) TextDecoration.LineThrough else TextDecoration.None,
                     modifier = Modifier.weight(1f)
                 )
 
                 Text(
-                    "Bajo",
-                    Modifier.background(Color.Green).padding(4.dp)
+                    task.priotiry.nom,
+                    Modifier.background(
+                        if (task.priotiry == Priority.Low) Color(0x4400CC08)
+                        else if (task.priotiry == Priority.Mid) Color(0x44FFFF00)
+                        else Color(0x44FF1100)
+                    ).padding(4.dp),
+                    color = if (task.priotiry == Priority.Low) Color(0xFF008824)
+                        else if (task.priotiry == Priority.Mid) Color(0xFFFFAA00)
+                        else Color(0xFF893300)
                 )
             }
             IconButton(onClick = onDelete)
             {
                 Icon(
-                    painter = painterResource(R.drawable.ic_launcher_background),
-                    contentDescription = ""
+                    imageVector = Icons.Filled.Close,
+                    contentDescription = "Eliminar"
                 )
             }
         }
@@ -135,9 +146,7 @@ fun PreviewTaskTag()
         var check by rememberSaveable { mutableStateOf(false) }
         TaskTag(
             Modifier.fillMaxWidth(),
-            Task("Entregar el proyecto de OOP", Priority.Hi,  State.Pending),
-            check,
-            { check = it }
+            Task("Entregar el proyecto de OOP", Priority.Hi,  State.Pending)
         )
         {}
     }
@@ -146,11 +155,24 @@ fun PreviewTaskTag()
 @Composable
 fun InicioScreen(modifier: Modifier = Modifier)
 {
+    var taskList = rememberSaveable { mutableStateListOf<Task>() }
+    var newTaskTextState = rememberTextFieldState()
+    val newTaskText = newTaskTextState.text.toString()
+    var selectedPriority by rememberSaveable { mutableStateOf(Priority.Mid) }
+    var displayLevel by rememberSaveable { mutableStateOf(State.Any) }
+    val pendingCount   = taskList.count { it.state == State.Pending }
+    val completedCount = taskList.count { it.state == State.Ready }
+
+    var visibleTasks = when (displayLevel) // Cuando el nivel de visibilidad
+    {
+        State.Any -> taskList // Sea cualquiera, entonces visibleTasks = taskList
+        else -> taskList.filter { it.state == displayLevel } // Si no, que agarre aquellos elementos que coincidan con el displayLevel
+    }
+
     Column(modifier.padding(16.dp))
     {
         Header(Modifier.fillMaxWidth(), "Mis pendientes")
 
-        var newTaskTextState = rememberTextFieldState()
         Row (
             Modifier.fillMaxWidth().height(64.dp),
             horizontalArrangement = Arrangement.spacedBy(8.dp)
@@ -158,13 +180,17 @@ fun InicioScreen(modifier: Modifier = Modifier)
         {
             OutlinedTextField(newTaskTextState, modifier = Modifier.weight(1f).fillMaxHeight())
             Button(
-                onClick = {},
+                onClick = {
+                    taskList.add(
+                        Task(newTaskText, selectedPriority)
+                    )
+
+                    newTaskTextState.clearText()
+                },
                 modifier = Modifier.fillMaxHeight().aspectRatio(1f)
             ) { Text("+", fontSize = 32.sp) }
         }
-        val newTaskText = newTaskTextState.text.toString()
 
-        var selectedPriority by rememberSaveable { mutableStateOf(Priority.Mid) }
         Row(
             Modifier.fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically,
@@ -182,7 +208,6 @@ fun InicioScreen(modifier: Modifier = Modifier)
             }
         }
 
-        var displayLevel by rememberSaveable { mutableStateOf(State.Any) }
         Row(
             Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.spacedBy(8.dp)
@@ -198,14 +223,28 @@ fun InicioScreen(modifier: Modifier = Modifier)
             }
         }
 
-        var check by rememberSaveable { mutableStateOf(false) }
-        TaskTag(
-            Modifier.fillMaxWidth(),
-            Task("Entregar el proyecto de OOP", Priority.Hi,  State.Pending),
-            check,
-            { check = it }
+        Column (Modifier.weight(1f))
+        {
+            visibleTasks.forEach()
+            { task ->
+                TaskTag(
+                    Modifier.fillMaxWidth(),
+                    task,
+                ) { taskList.remove(task) } // Como visibleTasks son apuntadores a taskList, los elementos son practicamente los mismos para la computadora.
+            }
+        }
+
+        Text(
+            if (taskList.size > 0) "Se han completado ${completedCount} tareas de ${taskList.size}"
+            else "No hay ninguna tarea disponible"
         )
-        {}
+
+        OutlinedButton(
+            onClick = { taskList.removeAll { it.state == State.Ready } },
+            enabled = if (completedCount > 0) true
+            else false
+        )
+        { Text("Borrar Completadas") }
     }
 }
 
