@@ -15,14 +15,18 @@ import androidx.compose.ui.unit.sp
 import com.example.estado_claire.R
 
 @Composable
-fun Header(modifier: Modifier = Modifier, text: String, subtitle: String)
+fun Header(modifier: Modifier = Modifier, text: String, subtitle: String = "")
 {
     Column(modifier)
     {
         Text(text, fontSize = 32.sp)
         Spacer(Modifier.padding(8.dp))
-        Text(subtitle, fontSize = 16.sp)
-        Spacer(Modifier.padding(8.dp))
+
+        if (subtitle != "")
+        {
+            Text(subtitle, fontSize = 16.sp)
+            Spacer(Modifier.padding(8.dp))
+        }
     }
 }
 

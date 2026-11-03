@@ -6,10 +6,10 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 
 // En este archivo va la lógica que es específica a una práctica.
-
-enum class Taller(val label: String, val cupo: Int)
+enum class Tip(val label: String, val amount: Float, val selected: Boolean)
 {
-    NINGUNO("Ninguno", -1),
-    FOTOGRAFIA("Fotografía", 6),
-    MUSICA("Música", 6)
+    Low("10%", 0.1f, false),
+    Mid("15%", 0.15f, false),
+    Hi("20%", 0.20f, true),
+    Other("Otro", 0.3f, false)
 }
