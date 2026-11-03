@@ -10,6 +10,12 @@ import androidx.compose.runtime.setValue
 enum class Taller(val label: String, val cupo: Int)
 {
     NINGUNO("Ninguno", -1),
-    FOTOGRAFIA("Fotografía", 6),
+    FOTOGRAFIA("Fotografía", 1),
     MUSICA("Música", 6)
+}
+
+enum class Pantalla(val label: String)
+{
+    Formulario("Formulario."),
+    FormularioLleno("Formulario lleno.")
 }

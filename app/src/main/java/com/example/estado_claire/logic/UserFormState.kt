@@ -54,6 +54,11 @@ class UserFormState(initialUser: User = User())
 
     fun validate(): Boolean
     {
+        nomError = null
+        mailError = null
+        edadError = null
+        tallerError = null
+
         var isValid = true
 
         if (user.nom.isBlank())
@@ -62,7 +67,7 @@ class UserFormState(initialUser: User = User())
             isValid = false
         }
 
-        if (user.nom.length > 3)
+        if (user.nom.length < 3)
         {
             nomError = "El nombre debe contener tres carácteres mínimo."
             isValid = false

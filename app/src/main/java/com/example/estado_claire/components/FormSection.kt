@@ -24,7 +24,7 @@ import com.example.estado_claire.logic.UserFormState
 fun Form(
     formState: UserFormState,
     modifier: Modifier = Modifier,
-    onSubmit: (User) -> Unit
+    onSubmit: (User, Taller, Boolean) -> Unit
 ) {
     Column(modifier, verticalArrangement = Arrangement.spacedBy(12.dp)) {
         // Campo Nombre
@@ -82,7 +82,7 @@ fun Form(
         Button(
             onClick = {
                 if (formState.validate()) {
-                    onSubmit(formState.user)
+                    onSubmit(formState.user, formState.user.taller, formState.validate())
                 }
             },
             modifier = Modifier.fillMaxWidth()
@@ -99,11 +99,12 @@ fun PreviewFromSection()
     Surface()
     {
         val formState = remember { UserFormState() }
+
         Form(
             modifier = Modifier.fillMaxWidth(),
             formState = formState,
             onSubmit = {
-                validUser ->
+                validUser, taller, isValid ->
                 println("Usuario listo para dar de alta: $validUser")
             }
         )
