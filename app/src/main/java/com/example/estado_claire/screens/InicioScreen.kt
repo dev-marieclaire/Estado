@@ -1,147 +1,159 @@
 package com.example.estado_claire
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.aspectRatio
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.requiredSize
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.BasicSecureTextField
-import androidx.compose.foundation.text.input.TextObfuscationMode
-import androidx.compose.foundation.text.input.rememberTextFieldState
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.RemoveRedEye
 import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material.icons.filled.VisibilityOff
-import androidx.compose.material.icons.outlined.RemoveRedEye
-import androidx.compose.material3.Checkbox
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.estado_claire.components.Header
 
-class Paciente(
-    val correo: String,
-    val passwd: String,
-    val souvient: Boolean,
+private const val DEMO_MAIL = "paciente@vida.mx"
+private const val DEMO_PASS = "Vida2025"
 
-)
+private fun isValid(mail: String, passwd: String) =
+    mail.trim() == DEMO_MAIL && passwd == DEMO_PASS
 
 @Composable
-fun InicioScreen(modifier: Modifier = Modifier)
+fun Login(
+    modifier: Modifier = Modifier,
+    onSubmit: (Boolean) -> Unit,
+)
 {
-    var mail by rememberSaveable { mutableStateOf("") }
+    var mail         by rememberSaveable { mutableStateOf("") }
+    var passwd       by rememberSaveable { mutableStateOf("") }
+    var showPassword by rememberSaveable { mutableStateOf(false) }
+    var souvient     by rememberSaveable { mutableStateOf(false) }
+    var errorMsg     by rememberSaveable { mutableStateOf<String?>(null) }
 
-    var passwd = rememberTextFieldState()
-    var showPassword by remember { mutableStateOf(false) }
+    fun attemptLogin()
+    {
+        val ok = isValid(mail, passwd)
+        errorMsg = if (ok) null else "Correo o contraseña incorrectos"
+        onSubmit(ok)
+    }
 
-    var souvient by rememberSaveable { mutableStateOf(false) }
-
-    Column(modifier.padding(16.dp))
+    Column(
+        modifier = modifier
+            .fillMaxSize()
+            .verticalScroll(rememberScrollState())
+            .padding(16.dp),
+        verticalArrangement = Arrangement.spacedBy(12.dp),
+    )
     {
         Box(
             Modifier
                 .height(96.dp)
                 .aspectRatio(1f)
                 .background(Color.Magenta),
-            contentAlignment = Alignment.Center
-        )
-        {
-            Icon(
-                imageVector = Icons.Filled.Add,
-                contentDescription = null
-            )
-        }
+            contentAlignment = Alignment.Center,
+        ) { Icon(Icons.Filled.Add, contentDescription = null) }
 
         Header(Modifier.fillMaxWidth(), "Clínica Vida", "Consulta tus citas médicas.")
 
         OutlinedTextField(
-            mail,
-            { mail = it },
+            value = mail,
+            onValueChange = { mail = it; errorMsg = null },
             label = { Text("Correo") },
             placeholder = { Text("Ingrese su correo electrónico.") },
             singleLine = true,
-            modifier = Modifier.fillMaxWidth()
+            isError = errorMsg != null,
+            keyboardOptions = KeyboardOptions(
+                keyboardType = KeyboardType.Email,
+                imeAction = ImeAction.Next,
+            ),
+            modifier = Modifier.fillMaxWidth(),
         )
 
-        BasicSecureTextField(
-            state = passwd,
-            textObfuscationMode =
-                if (showPassword) {
-                    TextObfuscationMode.Visible
-                } else {
-                    TextObfuscationMode.RevealLastTyped
-                },
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(6.dp)
-                .border(1.dp, Color.LightGray, RoundedCornerShape(6.dp))
-                .padding(6.dp),
-            decorator = { innerTextField ->
-                Box(modifier = Modifier.fillMaxWidth()) {
-                    Box(
-                        modifier = Modifier
-                            .align(Alignment.CenterStart)
-                            .padding(start = 16.dp, end = 48.dp)
-                    ) {
-                        innerTextField()
-                    }
+        OutlinedTextField(
+            value = passwd,
+            onValueChange = { passwd = it; errorMsg = null },
+            label = { Text("Contraseña") },
+            singleLine = true,
+            isError = errorMsg != null,
+            visualTransformation =
+                if (showPassword) VisualTransformation.None
+                else PasswordVisualTransformation(),
+            keyboardOptions = KeyboardOptions(
+                keyboardType = KeyboardType.Password,
+                imeAction = ImeAction.Done,
+            ),
+            keyboardActions = KeyboardActions(onDone = { attemptLogin() }),
+            trailingIcon = {
+                IconButton(onClick = { showPassword = !showPassword })
+                {
                     Icon(
-                        if (showPassword) {
-                            Icons.Filled.Visibility
-                        } else {
-                            Icons.Filled.VisibilityOff
-                        },
-                        contentDescription = "Toggle password visibility",
-                        modifier = Modifier
-                            .align(Alignment.CenterEnd)
-                            .requiredSize(48.dp).padding(16.dp)
-                            .clickable { showPassword = !showPassword }
+                        imageVector =
+                            if (showPassword) Icons.Filled.Visibility
+                            else Icons.Filled.VisibilityOff,
+                        contentDescription =
+                            if (showPassword) "Ocultar contraseña"
+                            else "Mostrar contraseña",
                     )
                 }
-            }
+            },
+            modifier = Modifier.fillMaxWidth(),
         )
 
-        Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically)
-        {
-            Checkbox(
-                souvient,
-                { souvient = it }
-            )
+        errorMsg?.let { Text(it, color = MaterialTheme.colorScheme.error) }
 
+        Row(verticalAlignment = Alignment.CenterVertically)
+        {
+            Checkbox(checked = souvient, onCheckedChange = { souvient = it })
             Text("Recordarme")
+        }
+
+        Button(
+            onClick = { attemptLogin() },
+            enabled = mail.isNotBlank() && passwd.isNotBlank(),
+            modifier = Modifier.fillMaxWidth(),
+        ) { Text("Entrar") }
+    }
+}
+
+@Composable
+fun InicioScreen(modifier: Modifier = Modifier) {
+    var logged by rememberSaveable { mutableStateOf(false) }
+
+    if (!logged) Login(modifier) { logged = it }
+    else
+    {
+        Column(modifier, horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.Center)
+        {
+            Text("Le damos la bienvenida.")
+            Button({ logged = false })
+            {
+                Text("Volver")
+            }
         }
     }
 }
 
-@Preview
+@Preview(showBackground = true)
 @Composable
-fun PreviewInicioScreen()
-{
-    Surface {
-        InicioScreen(Modifier.fillMaxSize())
-    }
+private fun LoginPreview() {
+    MaterialTheme { Surface { Login(onSubmit = {}) } }
+}
+
+@Preview(showBackground = true)
+@Composable
+private fun InicioPreview() {
+    MaterialTheme { Surface(Modifier.fillMaxSize()) { InicioScreen() } }
 }
