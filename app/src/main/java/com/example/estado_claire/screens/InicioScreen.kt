@@ -16,8 +16,12 @@ import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
@@ -45,9 +49,13 @@ data class Canasta(
 )
 
 @Composable
-fun InicioScreen(modifier: Modifier = Modifier)
+fun Carrito(
+    modifier: Modifier = Modifier,
+    completed: Boolean,
+    onCompletedChange: (Boolean) -> Unit
+)
 {
-    val carrito = remember { mutableStateListOf(
+    val carrito = remember(completed) { mutableStateListOf(
         Canasta(Producto.Tortillas, 0),
         Canasta(Producto.Leche, 0),
         Canasta(Producto.Huevo, 0),
@@ -56,7 +64,8 @@ fun InicioScreen(modifier: Modifier = Modifier)
 
     val sumatoriaArticulos: Int = carrito.sumOf { it.cantidad }
 
-    val sumatoriaTotal: Float = carrito.fold(0f) { sum, item ->
+    val sumatoriaTotal: Float = carrito.fold(0f)
+    { sum, item ->
         sum + item.producto.price * item.cantidad
     }
 
@@ -152,10 +161,28 @@ fun InicioScreen(modifier: Modifier = Modifier)
                 enabled = sumatoriaArticulos > 0
             ) { Text("Vaciar") }
 
-            Button({},
+            Button({ onCompletedChange(true) },
                 modifier = Modifier.weight(1f),
                 enabled = sumatoriaArticulos > 0
             ) { Text("Confirmar pedido") }
+        }
+    }
+}
+
+@Composable
+fun InicioScreen(modifier: Modifier = Modifier)
+{
+    var completed by remember { mutableStateOf(false) }
+    if (!completed)
+    {
+        Carrito(modifier, completed, { completed = it })
+    }
+    else
+    {
+        Column(modifier, horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.Center)
+        {
+            Text("¡Muchas gracias por su compra!")
+            Button({ completed = false}) { Text("Volver") }
         }
     }
 }
