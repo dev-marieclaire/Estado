@@ -1,10 +1,8 @@
 package com.example.estado_claire
 
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
@@ -13,21 +11,21 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.verticalScroll
+import androidx.compose.foundation.text.input.TextFieldLineLimits
+import androidx.compose.foundation.text.input.rememberTextFieldState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Check
 import androidx.compose.material.icons.outlined.Close
 import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
-import androidx.compose.material3.Label
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -55,13 +53,13 @@ fun Card(
     state: GuessState
 )
 {
-    var cardColor = when {
+    val cardColor = when {
         state == GuessState.True -> Color(0x3300FF33)
         state == GuessState.False -> Color(0x33FF0000)
         else -> Color.Unspecified
     }
 
-    var borderColor = when {
+    val borderColor = when {
         state == GuessState.True -> Color(0x8800CC55)
         state == GuessState.False -> Color(0x88FF0033)
         else -> Color.Gray
@@ -108,17 +106,13 @@ class Question(
         { "Se requieren al menos cuatro reactivos." }
     }
 
-    fun check(submission: Int): Boolean
-    {
-        if (submission == answer) return true
-        return false
-    }
 }
 
 @Composable
 fun QuizScreen(
     modifier: Modifier = Modifier,
-    onCompleted: (Int) -> Unit
+    completed: Boolean,
+    onCompleted: (Boolean, Int) -> Unit,
 )
 {
     var quizQuestionList = listOf<Question>(
@@ -154,7 +148,7 @@ fun QuizScreen(
         )
     )
 
-    var counter by remember { mutableStateOf(0) }
+    var counter by remember(completed) { mutableStateOf(0) }
     var guessed by remember { mutableStateOf(0) }
     var selectedAnswer by remember(counter) { mutableStateOf<Int?>(null) }
     var canShowResults by remember(counter) { mutableStateOf(false) }
@@ -261,7 +255,7 @@ fun QuizScreen(
                     if (counter < quizQuestionList.lastIndex) {
                         counter += 1
                     } else {
-                        onCompleted(guessed)
+                        onCompleted(true, guessed)
                     }
                 }
             },
@@ -275,14 +269,58 @@ fun QuizScreen(
 @Composable
 fun InicioScreen(modifier: Modifier = Modifier)
 {
-    var result by rememberSaveable() { mutableStateOf<Int?>(null) }
+    var completed by remember { mutableStateOf(false) }
+    var result by rememberSaveable() { mutableStateOf<Int>(0) }
+    var nom by remember { mutableStateOf<String?>(null) }
 
-    if (result == null)
-    { QuizScreen(modifier) { result = it } }
+    if (!completed) {
+        if (nom == null)
+        {
+            Column(modifier, horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.Center)
+            {
+                var state = rememberTextFieldState()
+                OutlinedTextField(
+                    state,
+                    label = { Text("Nombre") },
+                    placeholder = { Text("¡Introduce tu nombre aquí!") },
+                    lineLimits = TextFieldLineLimits.SingleLine
+                )
+
+                Button({
+                        if (state.text.isNotBlank())
+                            nom = state.text.toString().trim()
+                    },
+                    enabled = state.text.isNotBlank()
+                ) { Text("Comenzar") }
+            }
+        }
+        else
+        {
+            QuizScreen(modifier, completed)
+            { _completed, _result ->
+                completed = _completed
+                result = _result
+            }
+        }
+    }
     else
     {
-        Column(modifier)
-        { Text("Muy bien, nom d'utilisatrice") }
+        val resultScreenMessage = when {
+            result == 5 -> "¡Perfecto!"
+            result in 3 .. 4 -> "Buen trabajo."
+            else -> "¡Sigue practicando!"
+        }
+        Column(modifier, horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.Center)
+        {
+            Text("Muy bien, ${nom}")
+            Text("Has acumulado ${result} puntos de 5")
+            Text(resultScreenMessage)
+
+            Button({
+                completed = false
+                nom = null
+            }) { Text("Volver") }
+        }
     }
 }
 
