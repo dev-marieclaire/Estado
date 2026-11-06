@@ -18,6 +18,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
@@ -31,12 +32,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import com.example.estado_claire.components.MiCard
 
 @Composable
-fun InicioScreen(modifier: Modifier = Modifier, repetitions: Int)
+fun InicioScreen(modifier: Modifier = Modifier)
 {
     var couleurs_list = rememberSaveable { mutableStateListOf<Color>() }
     var couleur_escrito by rememberSaveable { mutableStateOf<String>("") }
@@ -47,16 +49,15 @@ fun InicioScreen(modifier: Modifier = Modifier, repetitions: Int)
         .fillMaxSize()
         .background(Color.White))
     {
-        Box(modifier = Modifier
-            .height(200.dp)
-            .fillMaxWidth()
+        Box(modifier =
+            modifier
             .background(Color.White)
             .padding(15.dp))
         {
             Column(modifier = Modifier.fillMaxSize())
             {
                 Spacer (modifier = Modifier.padding(10.dp))
-                TextField(couleur_escrito, onValueChange = {couleur_escrito = it}, modifier = Modifier.fillMaxWidth())
+                TextField(couleur_escrito, onValueChange = {couleur_escrito = it}, modifier = Modifier.fillMaxWidth(), singleLine = true)
 
                 Spacer (modifier = Modifier.padding(10.dp))
                 Button (onClick = {
@@ -105,6 +106,7 @@ fun InicioScreen(modifier: Modifier = Modifier, repetitions: Int)
 
                 LazyColumn(modifier = Modifier
                     .fillMaxWidth()
+                    .weight(1f)
                     .background(Color.White))
                 {
                     items(couleurs_list)
@@ -125,5 +127,15 @@ fun InicioScreen(modifier: Modifier = Modifier, repetitions: Int)
                 }
             }
         }
+    }
+}
+
+@Preview
+@Composable
+fun PreviewInicioScreen()
+{
+    Surface()
+    {
+        InicioScreen(Modifier.fillMaxSize())
     }
 }

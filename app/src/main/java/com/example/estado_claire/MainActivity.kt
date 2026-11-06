@@ -22,8 +22,7 @@ class MainActivity : ComponentActivity() {
         setContent {
             EstadoClaireTheme {
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                        var x by remember { mutableStateOf(0) }
-                    InicioScreen(modifier = Modifier.padding(innerPadding), 5)
+                    InicioScreen(modifier = Modifier.padding(innerPadding))
                 }
             }
         }
