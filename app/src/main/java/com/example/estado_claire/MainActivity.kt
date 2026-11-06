@@ -7,14 +7,12 @@ import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
+import com.example.estado_claire.screens.InicioScreen
 import com.example.estado_claire.ui.theme.EstadoClaireTheme
 
 class MainActivity : ComponentActivity() {
@@ -25,7 +23,7 @@ class MainActivity : ComponentActivity() {
             EstadoClaireTheme {
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
                         var x by remember { mutableStateOf(0) }
-                        InicioScreen(modifier = Modifier.padding(innerPadding))
+                    InicioScreen(modifier = Modifier.padding(innerPadding))
                 }
             }
         }
