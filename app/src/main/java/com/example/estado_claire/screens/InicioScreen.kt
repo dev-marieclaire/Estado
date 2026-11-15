@@ -271,7 +271,7 @@ fun InicioScreen(modifier: Modifier = Modifier)
 {
     var completed by remember { mutableStateOf(false) }
     var result by rememberSaveable() { mutableStateOf<Int>(0) }
-    var nom by remember { mutableStateOf<String?>(null) }
+    var nom by remember { mutableStateOf<String?>("Clara") }
 
     if (!completed) {
         if (nom == null)
