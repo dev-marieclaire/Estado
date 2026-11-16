@@ -1,6 +1,5 @@
 package com.example.estado_claire
 
-import com.example.estado_claire.screens.InicioScreen
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -10,6 +9,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.ui.Modifier
 import com.example.estado_claire.ui.theme.EstadoClaireTheme
+import com.example.estado_claire.view.components.screens.StartScreen
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -18,7 +18,7 @@ class MainActivity : ComponentActivity() {
         setContent {
             EstadoClaireTheme {
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                        InicioScreen(modifier = Modifier.padding(innerPadding))
+                        StartScreen(modifier = Modifier.padding(innerPadding))
                 }
             }
         }
