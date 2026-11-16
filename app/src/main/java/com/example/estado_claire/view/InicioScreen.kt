@@ -6,11 +6,12 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import com.example.estado_claire.view.screens.Dashboard
+import com.example.estado_claire.view.screens.TextSettingsView
 
 @Composable
 fun StartScreen(modifier: Modifier = Modifier)
 {
-    Dashboard(modifier)
+    TextSettingsView()
 }
 
 @Preview
