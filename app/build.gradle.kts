@@ -39,6 +39,7 @@ android {
 dependencies {
     implementation(platform(libs.androidx.compose.bom))
     implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.8.x")
+    implementation("androidx.compose.material:material-icons-core")
     implementation(libs.androidx.activity.compose)
     implementation(libs.androidx.compose.foundation.layout)
     implementation(libs.androidx.compose.material3)
