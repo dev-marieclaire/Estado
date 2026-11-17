@@ -1,16 +1,12 @@
 package com.example.estado_claire.model
 
-import androidx.compose.ui.text.font.Font
-
-enum class Spacing(val label: String, val multiplier: Float)
-{
+enum class Spacing(val label: String, val multiplier: Float) {
     Compact("Compacto", 1.0f),
     Normal("Normal", 1.3f),
     Huge("Amplio", 1.6f)
 }
 
-enum class FontType(val type: Boolean)
-{
+enum class FontType(val isSerif: Boolean) {
     SANS(false),
     SERIF(true)
 }
@@ -20,14 +16,15 @@ data class TextSettingsModel(
     val fontType: FontType = FontType.SANS,
     val spacing: Spacing = Spacing.Normal,
     val obscureMode: Boolean = false
-)
-{
-    val MIN_FONT_SIZE: Float = 14f
-    val MAX_FONT_SIZE: Float = 32f
+) {
+    companion object
+    {
+        const val MIN_FONT_SIZE = 14f
+        const val MAX_FONT_SIZE = 32f
+    }
 
     fun changeFontSize(size: Float): TextSettingsModel =
-        if (size in MIN_FONT_SIZE .. MAX_FONT_SIZE) copy(fontSize = size)
-        else this
+        copy(fontSize = size.coerceIn(MIN_FONT_SIZE, MAX_FONT_SIZE))
 
     fun changeFontType(type: FontType): TextSettingsModel = copy(fontType = type)
 

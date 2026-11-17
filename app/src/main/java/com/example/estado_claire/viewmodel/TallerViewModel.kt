@@ -1,75 +1,86 @@
 package com.example.estado_claire.viewmodel
 
-import androidx.compose.foundation.text.input.rememberTextFieldState
 import androidx.lifecycle.ViewModel
 import com.example.estado_claire.model.Taller
 import com.example.estado_claire.model.TallerModel
+import com.example.estado_claire.model.User
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 
-private val EMAIL_REGEX = Regex(
-    "^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}$"
-)
-
 class TallerViewModel : ViewModel()
 {
-    var _taller = MutableStateFlow<TallerModel>(TallerModel())
-        private set
+    private val _tallerState = MutableStateFlow(TallerModel())
+    val tallerState: StateFlow<TallerModel> = _tallerState.asStateFlow()
 
-    val taller: StateFlow<TallerModel> = _taller.asStateFlow()
+    fun onNombreChange(nombre: String) = _tallerState.update()
+    { it.copy(nombre = nombre, nombreError = null) }
 
-    fun changeTaller(taller: Taller)
-    { _taller.value = _taller.value.changeTaller(taller) }
+    fun onEmailChange(email: String) = _tallerState.update()
+    { it.copy(email = email, emailError = null) }
 
-    fun clearAllErrors()
-    { _taller.value.clearAllErrors() }
-
-    fun validateForm(): Boolean
+    fun onEdadChange(edad: String) = _tallerState.update()
     {
-        _taller.value.clearAllErrors()
-        val current = _taller.value
-
-        val nom  = current.nomTextField.text.toString().trim()
-        val mail = current.mailTextField.text.toString().trim()
-        val ageText = current.ageTextField.text.toString().trim()
-        val age  = ageText.toIntOrNull()
-
-        val nomError = when {
-            nom.isEmpty()    -> "El nombre no debe estar vacío"
-            nom.length < 3   -> "El nombre debe contener al menos 3 caracteres"
-            else             -> null
-        }
-
-        val mailError = when {
-            mail.isEmpty()             -> "El correo no debe estar vacío"
-            !EMAIL_REGEX.matches(mail) -> "El correo debe tener un formato válido (ejemplo@dominio.com)"
-            else                       -> null
-        }
-
-        val ageError = when {
-            ageText.isEmpty() -> "La edad no debe estar vacía"
-            age == null       -> "La edad debe ser un número"
-            age < 12          -> "La edad mínima es 12 años"
-            age > 99          -> "La edad máxima es 99 años"
-            else              -> null
-        }
-
-        val tallerError =
-            if (current.tallerDropdownField == Taller.Ninguno)
-                "Seleccione un taller"
-            else null
-
-        _taller.update {
-            it.copy(
-                nomTextFieldError       = nomError,
-                mailTextFieldError      = mailError,
-                ageTextFieldError       = ageError,
-                tallerDropdownFieldError = tallerError,
-            )
-        }
-
-        return nomError == null && mailError == null && ageError == null && tallerError == null
+        if (edad.all { it.isDigit() }) it.copy(edad = edad, edadError = null)
+        else it
     }
+
+    fun onTallerChange(taller: Taller) = _tallerState.update()
+    { it.copy(taller = taller, tallerError = null) }
+
+    fun validateForm()
+    {
+        val current = _tallerState.value
+        val age = current.edad.toIntOrNull()
+
+        val nombreError = when {
+            current.nombre.isBlank() -> "El nombre no debe estar vacío"
+            current.nombre.trim().length < 3 -> "El nombre debe contener al menos 3 caracteres"
+            else -> null
+        }
+
+        val emailError = when {
+            current.email.isBlank() -> "El correo no debe estar vacío"
+            !current.email.matches(Regex("^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}$")) -> "Formato de correo inválido"
+            else -> null
+        }
+
+        val edadError = when {
+            current.edad.isBlank() -> "La edad no debe estar vacía"
+            age == null -> "La edad debe ser un número"
+            age < 12 || age > 99 -> "La edad debe estar entre 12 y 99 años"
+            else -> null
+        }
+
+        val tallerError = if (current.taller == Taller.Ninguno) "Seleccione un taller" else null
+
+        val hasErrors = nombreError != null || emailError != null || edadError != null || tallerError != null
+
+        if (!hasErrors)
+        {
+            _tallerState.update()
+            {
+                it.copy(
+                    nombreError = null, emailError = null, edadError = null, tallerError = null,
+                    isSuccess = true
+                )
+            }
+        }
+        else
+        {
+            _tallerState.update()
+            {
+                it.copy(
+                    nombreError = nombreError,
+                    emailError = emailError,
+                    edadError = edadError,
+                    tallerError = tallerError
+                )
+            }
+        }
+    }
+
+    fun resetSuccessState()
+    { _tallerState.update { it.copy(isSuccess = false) } }
 }
