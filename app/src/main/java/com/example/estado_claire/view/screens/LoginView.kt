@@ -81,7 +81,7 @@ fun Login(
 
         OutlinedTextField(
             value = uiState.model.mail,
-            onValueChange = viewModel::onMailChange,
+            onValueChange = { viewModel.onMailChange(it) },
             label = { Text("Correo") },
             placeholder = { Text("Ingrese su correo electrónico.") },
             singleLine = true,
@@ -95,7 +95,7 @@ fun Login(
 
         OutlinedTextField(
             value = uiState.model.passwd,
-            onValueChange = viewModel::onPassChange,
+            onValueChange = { viewModel.onPassChange(it) },
             label = { Text("Contraseña") },
             singleLine = true,
             isError = uiState.errorMsg != null,
@@ -108,7 +108,7 @@ fun Login(
             ),
             keyboardActions = KeyboardActions(onDone = { viewModel.attemptLogin() }),
             trailingIcon = {
-                IconButton(onClick = viewModel::toggleShowPassword) {
+                IconButton(onClick = { viewModel.toggleShowPassword() }) {
                     Icon(
                         imageVector = if (uiState.showPassword) Icons.Filled.Visibility
                         else Icons.Filled.VisibilityOff,
