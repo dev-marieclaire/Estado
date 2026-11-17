@@ -15,8 +15,8 @@ val PROPINA_MAX = 30f
 data class CuentaDivididaModel(
     val monto: Float = 0f,
     val propina: Propina = Propina.Hi,
-    val customPropinaPercentage: Float = 0f, // Guarda el valor del Slider (0 a 30)
-    val personas: Int = 5, // Inicia en 5 como en tu captura
+    val customPropinaPercentage: Float = 0f,
+    val personas: Int = 1,
     val redondear: Boolean = true
 ) {
     companion object {
